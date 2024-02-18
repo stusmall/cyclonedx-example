@@ -1,0 +1,23 @@
+[package]
+name = "cyclonedx-example"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/uniffi-bindgen.rs"
+
+[lib]
+crate-type = ["cdylib"]
+name = "cyclonedx_example"
+
+[dependencies]
+uniffi = { version = "0.26", features = ["cli"] }
+memmap = "0.7.0"
+h2 = "=0.4.1"
+filesystem = "=0.4.4"
+
+
+[build-dependencies]
+uniffi = { version = "0.26", features = [ "build" ] }
+rsa = "=0.9.6"

@@ -1,0 +1,8 @@
+/target
+/sboms
+/out
+/.idea
+/bindings/python/dist
+/bindings/python/cyclonedx_example/libcyclonedx_example.so
+/bindings/python/cyclonedx_example/cyclonedx_example.py
+__pycache__
