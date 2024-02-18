@@ -32,7 +32,7 @@ jobs:
         run: nix-shell --command 'make generate-sbom'
       - name: Create release
         run: >
-          gh release create --draft --repo ${{ github.repository }}
+          gh release create --draft --repo ${{ github.repository }} -t ${{ github.ref_name }}
           ${{ github.ref_name }}
           sboms/*
         env:
