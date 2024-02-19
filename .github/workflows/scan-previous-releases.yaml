@@ -1,0 +1,37 @@
+name: Scan previous releases
+on: workflow_call
+jobs:
+  setup:
+    permissions:
+      contents: read
+    runs-on: ubuntu-22.04
+    outputs:
+      to-scan: ${{ steps.fetch.outputs.TO_SCAN }}
+    steps:
+      - name: Get all old versions
+        id: fetch
+        run: >
+          echo "TO_SCAN=$(jq -cn --argjson environments $(gh release list -R stusmall/cyclonedx-example --json tagName | jq -c '[.[].tagName]') '{target: $environments}')" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+  scan-releases:
+    permissions:
+      contents: read
+    needs: setup
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix: ${{ fromJson(needs.setup.outputs.to-scan) }}
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Pull boms
+        run: gh release download ${{matrix.target}}
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - uses: cachix/install-nix-action@7ac1ec25491415c381d9b62f0657c7a028df52a7 # v24
+        with:
+          nix_path: nixpkgs=channel:nixos-23.11
+      - name: Scan bom
+        run: nix-shell -p trivy --command "trivy sbom --exit-code 1 --severity MEDIUM,HIGH,CRITICAL python.cdx.json"
+
+
+
